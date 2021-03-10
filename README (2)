@@ -1,0 +1,180 @@
+
+////////////////////////////  TEMA 2 - strings \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+Fatu Miruna-Maria 
+321CA
+
+========================= Task 1 - One Time Pad =================================
+
+	-> Uitilizand instructiunea de ciclare (loop), de la pozitia finala catre prima 
+	pozitie extrag fiecare element din plaintext si chipertext   
+
+	-> Se realizeaza operatia xor intre elementele extrase
+
+	-> Rezultatul este plasat in key, pe pozitia corespunzatoare acestuia
+
+========================= Task 2 - Caesar Chiper ================================
+	
+	-> In interiorul instructiunii loop (eticheta cycle), extrag fiecare element
+	din plaintext, pe rand, verificand daca acesta indeplineste conditiile necesare 
+	de a fi un caracter
+
+			- daca este caracter, acesta va fi prelucrat in continuare, obtinand
+			caracterul criptat (prin deplasarea circulara)
+			- daca nu este caracter, nu i se face nicio schimbare
+
+	-> In final, se va adauga caracterul criptat pe pozitia corespunzatoare din
+	chipertext
+
+Etichete:
+
+	%%%% possibleChar %%%%
+
+	- daca s-a intrat in aceasta eticheta, inseamna ca exista o posibilitate ca 
+	elementul sa fie caracter
+	- in functie de intervalul in care se incadreaza, acesta intra in eticheta 
+	isChar sau isBigChar
+	- in cazul in care nu indeplineste niciuna dintre conditii, inseamna ca 
+	elementul nu este un caracter, revenind in cycle pentru a fi plasat in key,
+	 fara nicio modificare
+
+	%%%% isChar & isBigChar %%%%
+
+	- se mai realizeaza inca o verificare pentru a confirma ca elementul este char
+	- se adauga elementului cheia din key (stocata in registrul bl)
+	- daca noua valoare depaseste limitele de valori pe care le poate lua o 
+	litera mica/mare, se va accesa eticheta backToChar/backBigChar
+
+	%%%% backToChar & backBigChar %%%%
+
+	- readuce elementul la o valoare valida pentru o litera mica/mare 
+	- se scade limita superioara a intervalului pentru tipul de litera
+	- restul obtinut se aduna cu limita inferioara a aceluiasi interval
+
+	%%%% resizeIndex %%%%
+
+	- in cazul in care valoarea obtinuta in urma adunarii cheii este mult prea
+	mare chiar si dupa ce am refacut valoarea in backToChar, se va redimensiona
+	indexul prin scaderi succesive cu valoarea 26 (numarul literelor din alfabet)
+
+
+========================= Task 3 - Vigenere Chiper ================================
+
+	-> In interiorul instructiunii loop (eticheta cycle), extrag pe rand, de aceasta
+	data de la pozitia 0 spre ultima pozitie, fiecare element din plaintext, verificand
+	ca la task 2 daca elementele sunt caractere
+
+	-> In final, se va adauga caracterul criptat in chipertext
+
+Etichete:
+
+	-> Analog task-ului 2, etichetele possibleChar, isChar, isBigChar, backToChar, 
+	backBigChar, resize au aceeasi functionalitate ,astfel, utilitatea acestora este prezentata mai sus.
+
+	%%%% getKey & getKeyBig %%%%
+
+	- se extrage primul element din key, acesta reprezentand numarul cu care 
+	 elementul din plaintext va fi deplasat circular
+	- se verifica daca contorul depaseste lungimea cheii, caz in care este accesata 
+	eticheta keyAdapt/keyAdaptB
+	- este returnata valoarea cheii
+
+	%%%% keyAdapt & keyAdaptB %%%%
+
+	- reseteaza contorul si pozitia indexului din key la valorile initiale
+	- se decrementeaza atat valoarea contorului cat si a pozitiei cheii (edi) pana se
+	ajunge la adresa de inceput a acestuia, respectiv 0 pentru contor
+
+	%%%% gotKey & gotKeyBig %%%%
+
+	- se obtine indexul cheii prin scaderea limitei superioare a intervalului literelor mici/mari
+	- se realizeaza deplasarea circulara a elementului din plaintext prin adunarea indexului
+	obtinut la valoarea acestuia
+	- analog task-ului anterior, in caz ca noua valoare a elementului depaseste limitele 
+	intervalului literelor mici/mari se acceseaza eticheta backToChar/backBigChar
+
+============================= Task 4 - StrStr =============================
+
+	-> Cu ajutorul instructiunii de ciclare (eticheta cycle), este extras, pe rand, 
+	fiecare caracter din haystack
+
+	-> In continuare, fiecare element este comparat cu primul caracter din needle
+	(eticheta check)
+
+	-> Daca nu a fost gasit substring-ul, indexul din registrul edi este incrementand, 
+	fiind sigur faptul ca index-ul respectiv nu indica spre pozitia needle-ului
+
+Etichete:
+
+	%%%% check %%%%
+
+	- se tine cont de pozitia curenta in needle cu ajutorul contorului din ch
+	- se compara caracterul de la pozitia curenta din needle cu cel din haystack
+	- daca cele doua caractere corespund, se acceseaza eticheta possibleMatch, iar in 
+	caz contrar, este accesata eticheta resizeCnt
+
+	%%%% resizeCnt %%%%
+
+	- este utilizata cand presupunerea gasirii unui "match" a fost gresita
+	- reseteaza pozitia curenta din haystack si needle, dar si contorul pana la pozitia 
+	unde am identificat un "match" posibil al substring-ului - haystack,
+	respectiv pozitia initiala - needle si 0 pentru contor
+	- se incrementeaza pozitia din haystack (esi) pentru a trece la pozitia urmatoare, 
+	pozitia curenta fiind deja analizata anterior
+
+	%%%% possibleMatch %%%%
+
+	- in cazul in care contorul ch = needle_len, inseamna ca a fost gasit un "match" 
+	valid al substring-ului needle in haystack si se returneaza indexul curent [edi]
+	- in caz contrar, se continua cautarea needle-ului revenind in cycle
+
+========================== Task 5 - Binary to Hexadecimal ==========================
+
+	-> In prima parte a implementarii, prin determinarea naturii lui length (par/impar), 
+	pot determina lungimea secventei hexa_value
+
+	-> Folosind instructiunea de ciclare loop (eticheta cycle), de la dreapta la stanga 
+	sunt extrasi pe rand toti bitii din bin_sequence pentru a fi analizati
+
+	-> Atunci cand numarul de biti analizati este 4, se creeaza numarul echivalent din 
+	hexazecimal, accesand eticheta createNrHex
+
+	-> La fiecare iteratie, variabila bh este shiftata cu o pozitie, pastrand in ea o 
+	noua putere a lui 2
+
+	-> In cazul in care bitul de la pozitia curenta este setat, i se va adauga 
+	variabilei rezultat (ah) valoarea din bh, accesand eticheta addNumber
+
+
+Etichete:
+
+	%%%% evenNumber & oddNumber %%%%
+
+	- pentru ca se vor crea secvente de cate 4 biti, prin scaderi succesive de 4 se 
+	determina valoarea lui bh (dimensiunea secventei hexa_value)
+
+	%%%% firstBit %%%%
+
+	- incrementeaza contorul bitilor extrasi
+	- verfica daca primul bit din secventa ce urmeaza a fi analizata este 1
+
+	%%%% isSet %%%%
+
+	- daca primul bit este setat, se adauga variabilei rezultat (ah) valoarea 
+	corespunzatoare lui 2^0, adica 1
+
+	%%%% createNrHex %%%%
+
+	- verifica daca rezultatul obtinut este reprezentat in memorie ca si numar/caracter, 
+	avand in vedere ca numerele mai mari de 9 sunt reprezentate in hexazecimal ca si caractere
+
+	%%%% isNumber & isChar %%%%
+
+	- se realizeaza operatiile necesare pentru a transforma valoare obtinuta in variabia 
+	rezultat (ah) in numar/litera mare
+
+	%%%% ready %%%%
+
+	- este plasata valoarea din variabila rezultat (ah) pe pozitia corespunzatoare 
+	in hexa_value
+	- se reseteaza valorile contorului bitilor (bl), a variabilei bh si ah pentru a 
+	incepe analiza unei noi secvente de biti
